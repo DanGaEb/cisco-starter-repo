@@ -1,18 +1,25 @@
 import React, {Component} from "react";
+import { w3cwebsocket as W3CWebSocket } from "websocket";
 
-let latency;
-
-let socket = new WebSocket('ws://localhost:55455');
-
-socket.onmessage = function(e) {
-    latency = Date.now() - Number(e.data)
-}
+const client = new W3CWebSocket('ws://localhost:55455');
 
 class Socket extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            latency: null
+        }
+    }
+
+    componentDidMount() {
+        client.onmessage = (message) => {
+            this.setState({latency: Date.now() - message.data})
+        }
+    }
 
     render() {
         return (
-            <span className="Socket">{latency}</span>
+            <span className="Socket">{this.state.latency}</span>
         )
     }
 
